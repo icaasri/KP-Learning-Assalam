@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // database/migrations/xxxx_xx_xx_xxxxxx_create_users_table.php
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('username')->unique(); // Tambahkan ini
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            // Tambahkan ini untuk peran (role)
+            $table->enum('role', ['admin', 'guru', 'siswa'])->default('siswa');
             $table->rememberToken();
             $table->timestamps();
         });

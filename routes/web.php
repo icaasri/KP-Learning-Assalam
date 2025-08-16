@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\JadwalController; // <-- Tambahkan ini
 use App\Http\Controllers\Guru\MateriController;
 use App\Http\Controllers\Guru\QuizController;
 use App\Http\Controllers\Guru\QuestionController;
@@ -48,6 +49,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', UserController::class);
+    Route::resource('jadwal', JadwalController::class); // <-- Route baru untuk jadwal
 });
 
 // Grup Route Guru

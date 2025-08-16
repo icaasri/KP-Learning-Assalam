@@ -14,6 +14,14 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            // --- Menambahkan Warna Kustom ---
+            colors: {
+                'assalam': {
+                    'yellow': '#f8b803', // Warna kuning dari logo
+                    'dark-blue': '#2c3e50', // Warna biru tua untuk sidebar/header
+                },
+            },
+            // -----------------------------
         },
     },
 

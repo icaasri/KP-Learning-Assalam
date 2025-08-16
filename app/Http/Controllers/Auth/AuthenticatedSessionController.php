@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\RouteServiceProvider;
+// use App\Providers\RouteServiceProvider; // <-- HAPUS ATAU KOMENTARI BARIS INI
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,25 +25,18 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        // Baris ini akan mencoba mengautentikasi user berdasarkan input
         $request->authenticate();
 
-        // Baris ini akan membuat session baru untuk user
         $request->session()->regenerate();
 
-        // --- INI BAGIAN YANG DIMODIFIKASI ---
-        
-        // Dapatkan user yang sedang login
+        // Logika redirect berdasarkan role tetap di sini
         $user = $request->user();
-
-        // Periksa apakah peran user adalah 'admin'
         if ($user->role === 'admin') {
-            // Jika ya, arahkan ke dashboard admin
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        // Jika bukan admin (guru atau siswa), arahkan ke dashboard umum
-        return redirect()->intended(RouteServiceProvider::HOME);
+        // --- PERBAIKAN: Langsung arahkan ke route 'dashboard' ---
+        return redirect()->intended(route('dashboard'));
     }
 
     /**

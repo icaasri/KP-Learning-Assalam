@@ -17,16 +17,12 @@ use App\Http\Controllers\Siswa\JadwalController as SiswaJadwalController;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
 
 // Route Utama (Halaman Awal)
+// --- PERBAIKAN: Arahkan langsung ke halaman login ---
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 // Route Dashboard Utama (Akan diarahkan berdasarkan role)
@@ -62,17 +58,12 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
 
 // Grup Route Siswa
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
-    // Rute Materi Siswa
     Route::get('materi', [SiswaMateriController::class, 'index'])->name('materi.index');
     Route::get('materi/{materi}', [SiswaMateriController::class, 'show'])->name('materi.show');
-    
-    // Rute Quiz Siswa
     Route::get('quiz', [SiswaQuizController::class, 'index'])->name('quiz.index');
     Route::get('quiz/{quiz}', [SiswaQuizController::class, 'show'])->name('quiz.show');
     Route::post('quiz/{quiz}', [SiswaQuizController::class, 'store'])->name('quiz.store');
     Route::get('quiz/result/{attempt}', [SiswaQuizController::class, 'result'])->name('quiz.result');
-
-    // Rute Jadwal Siswa
     Route::get('jadwal', [SiswaJadwalController::class, 'index'])->name('jadwal.index');
 });
 

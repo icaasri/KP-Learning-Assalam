@@ -1,36 +1,26 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin; // <-- Ini bagian yang penting
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User; // Pastikan ini ada
 
 class DashboardController extends Controller
 {
     /**
-     * Handle the incoming request.
-     *
-     * Arahkan pengguna ke dashboard yang sesuai berdasarkan peran (role) mereka.
+     * Menampilkan halaman dashboard untuk admin.
      */
-    public function __invoke(Request $request)
+    public function index()
     {
-        $user = Auth::user();
-
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        if ($user->role === 'guru') {
-            // Diarahkan ke halaman materi guru sebagai dashboard defaultnya
-            return redirect()->route('guru.materi.index');
-        }
-
-        if ($user->role === 'siswa') {
-            // Diarahkan ke halaman materi siswa sebagai dashboard defaultnya
-            return redirect()->route('siswa.materi.index');
-        }
-
-        // Fallback jika role tidak terdefinisi (seharusnya tidak terjadi)
-        return view('dashboard');
+        // Mengambil data statistik untuk ditampilkan di dashboard
+        $jumlahSiswa = User::where('role', 'siswa')->count();
+        $jumlahGuru = User::where('role', 'guru')->count();
+        
+        // Mengirim data ke view
+        return view('admin.dashboard', [
+            'jumlahSiswa' => $jumlahSiswa,
+            'jumlahGuru' => $jumlahGuru,
+        ]);
     }
 }

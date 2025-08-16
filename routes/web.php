@@ -5,12 +5,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\JadwalController; // <-- Tambahkan ini
+use App\Http\Controllers\Admin\JadwalController;
 use App\Http\Controllers\Guru\MateriController;
 use App\Http\Controllers\Guru\QuizController;
 use App\Http\Controllers\Guru\QuestionController;
 use App\Http\Controllers\Siswa\MateriController as SiswaMateriController;
 use App\Http\Controllers\Siswa\QuizController as SiswaQuizController;
+use App\Http\Controllers\Siswa\JadwalController as SiswaJadwalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +50,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', UserController::class);
-    Route::resource('jadwal', JadwalController::class); // <-- Route baru untuk jadwal
+    Route::resource('jadwal', JadwalController::class);
 });
 
 // Grup Route Guru
@@ -70,6 +71,9 @@ Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->grou
     Route::get('quiz/{quiz}', [SiswaQuizController::class, 'show'])->name('quiz.show');
     Route::post('quiz/{quiz}', [SiswaQuizController::class, 'store'])->name('quiz.store');
     Route::get('quiz/result/{attempt}', [SiswaQuizController::class, 'result'])->name('quiz.result');
+
+    // Rute Jadwal Siswa
+    Route::get('jadwal', [SiswaJadwalController::class, 'index'])->name('jadwal.index');
 });
 
 

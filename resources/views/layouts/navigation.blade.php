@@ -21,6 +21,9 @@
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Manajemen User') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.jadwal.index')" :active="request()->routeIs('admin.jadwal.*')">
+                            {{ __('Manajemen Jadwal') }}
+                        </x-nav-link>
                     @endif
 
                     {{-- Link Khusus Guru --}}
@@ -40,6 +43,9 @@
                         </x-nav-link>
                         <x-nav-link :href="route('siswa.quiz.index')" :active="request()->routeIs('siswa.quiz.*')">
                             {{ __('Quiz') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('siswa.jadwal.index')" :active="request()->routeIs('siswa.jadwal.*')">
+                            {{ __('Jadwal Belajar') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -98,6 +104,9 @@
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     {{ __('Manajemen User') }}
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.jadwal.index')" :active="request()->routeIs('admin.jadwal.*')">
+                    {{ __('Manajemen Jadwal') }}
+                </x-responsive-nav-link>
             @endif
 
             @if(Auth::user()->role == 'guru')
@@ -115,6 +124,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('siswa.quiz.index')" :active="request()->routeIs('siswa.quiz.*')">
                     {{ __('Quiz') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('siswa.jadwal.index')" :active="request()->routeIs('siswa.jadwal.*')">
+                    {{ __('Jadwal Belajar') }}
                 </x-responsive-nav-link>
             @endif
         </div>

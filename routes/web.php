@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController; // Controller untuk mengarahkan dashboard
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Guru\MateriController;
 use App\Http\Controllers\Siswa\MateriController as SiswaMateriController;
+use App\Http\Controllers\Guru\QuizController;
+use App\Http\Controllers\Guru\QuestionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,12 +26,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route Dashboard Utama (akan diarahkan oleh DashboardController)
-Route::get('/dashboard', DashboardController::class)
+// Route Dashboard Utama (Akan diarahkan berdasarkan role)
+Route::get('/dashboard', [DashboardController::class, '__invoke'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Route untuk Profile User (Bawaan Breeze)
+// Route untuk Profile User
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -50,6 +52,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 // Grup Route Guru
 Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
     Route::resource('materi', MateriController::class);
+    Route::resource('quiz', QuizController::class);
+    Route::post('quiz/{quiz}/questions', [QuestionController::class, 'store'])->name('quiz.questions.store');
 });
 
 // Grup Route Siswa
@@ -59,5 +63,5 @@ Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->grou
 });
 
 
-// Route Autentikasi (Bawaan Breeze)
+// Route Autentikasi
 require __DIR__.'/auth.php';

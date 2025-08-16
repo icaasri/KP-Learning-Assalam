@@ -6,9 +6,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Guru\MateriController;
-use App\Http\Controllers\Siswa\MateriController as SiswaMateriController;
 use App\Http\Controllers\Guru\QuizController;
 use App\Http\Controllers\Guru\QuestionController;
+use App\Http\Controllers\Siswa\MateriController as SiswaMateriController;
+use App\Http\Controllers\Siswa\QuizController as SiswaQuizController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,8 +59,15 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
 
 // Grup Route Siswa
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
+    // Rute Materi Siswa
     Route::get('materi', [SiswaMateriController::class, 'index'])->name('materi.index');
     Route::get('materi/{materi}', [SiswaMateriController::class, 'show'])->name('materi.show');
+    
+    // Rute Quiz Siswa
+    Route::get('quiz', [SiswaQuizController::class, 'index'])->name('quiz.index');
+    Route::get('quiz/{quiz}', [SiswaQuizController::class, 'show'])->name('quiz.show');
+    Route::post('quiz/{quiz}', [SiswaQuizController::class, 'store'])->name('quiz.store');
+    Route::get('quiz/result/{attempt}', [SiswaQuizController::class, 'result'])->name('quiz.result');
 });
 
 

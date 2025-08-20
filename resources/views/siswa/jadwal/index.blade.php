@@ -13,32 +13,30 @@
                         Jadwal Kelas: {{ Auth::user()->kelas->tingkat ?? '' }} {{ Auth::user()->kelas->jurusan->singkatan ?? '' }} {{ Auth::user()->kelas->nama_kelas ?? 'Belum terdaftar' }}
                     </h3>
 
-                    @if(Auth::user()->kelas_id)
+                    @if(Auth::user()->kelas_id && $jadwals->count() > 0)
                         <div class="space-y-6">
                             @foreach ($jadwals as $hari => $jadwalHarian)
-                                @if($jadwalHarian && $jadwalHarian->count() > 0)
-                                    <div>
-                                        <h4 class="font-bold text-lg mb-2 border-b pb-1">{{ $hari }}</h4>
-                                        <div class="overflow-x-auto">
-                                            <table class="min-w-full">
-                                                <tbody>
-                                                    @foreach ($jadwalHarian as $jadwal)
-                                                        <tr class="border-b">
-                                                            <td class="py-3 px-2 w-1/4 text-sm text-gray-500">{{ date('H:i', strtotime($jadwal->waktu_mulai)) }} - {{ date('H:i', strtotime($jadwal->waktu_selesai)) }}</td>
-                                                            <td class="py-3 px-2 font-semibold">{{ $jadwal->mata_pelajaran }}</td>
-                                                            <td class="py-3 px-2 text-sm text-gray-600">{{ $jadwal->guru->name }}</td>
-                                                            <td class="py-3 px-2 text-sm text-gray-500 text-right">{{ $jadwal->ruangan }}</td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2 border-b pb-1">{{ $hari }}</h4>
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full">
+                                            <tbody>
+                                                @foreach ($jadwalHarian as $jadwal)
+                                                    <tr class="border-b last:border-b-0">
+                                                        <td class="py-3 px-2 w-1/4 text-sm text-gray-500">{{ date('H:i', strtotime($jadwal->waktu_mulai)) }} - {{ date('H:i', strtotime($jadwal->waktu_selesai)) }}</td>
+                                                        <td class="py-3 px-2 font-semibold">{{ $jadwal->mata_pelajaran }}</td>
+                                                        <td class="py-3 px-2 text-sm text-gray-600">{{ $jadwal->guru->name }}</td>
+                                                        <td class="py-3 px-2 text-sm text-gray-500 text-right">{{ $jadwal->ruangan }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-                                @endif
+                                </div>
                             @endforeach
                         </div>
                     @else
-                        <p class="text-center text-gray-500">Anda belum terdaftar di kelas manapun. Jadwal tidak tersedia.</p>
+                        <p class="text-center text-gray-500 py-10">Jadwal pelajaran belum tersedia untuk kelas Anda.</p>
                     @endif
                 </div>
             </div>

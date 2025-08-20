@@ -11,28 +11,18 @@ use Illuminate\Support\Facades\Storage;
 
 class MateriController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // Ambil materi yang dibuat oleh guru yang sedang login
         $materis = Materi::where('guru_id', Auth::id())->with('kelas.jurusan')->orderBy('created_at', 'desc')->paginate(10);
         return view('guru.materi.index', compact('materis'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $kelas = Kelas::with('jurusan')->get();
         return view('guru.materi.create', compact('kelas'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -40,16 +30,18 @@ class MateriController extends Controller
             'deskripsi' => 'nullable|string',
             'kelas_id' => 'required|exists:kelas,id',
             'tipe' => 'required|in:pdf,video',
-            'file_pdf' => 'required_if:tipe,pdf|file|mimes:pdf|max:10240', // max 10MB
-            'youtube_url' => 'required_if:tipe,video|url'
+            'file_pdf' => 'required_if:tipe,pdf|nullable|file|mimes:pdf|max:10240',
+            'youtube_url' => 'required_if:tipe,video|nullable|url'
         ]);
 
         $data = $request->only(['judul', 'deskripsi', 'kelas_id', 'tipe', 'youtube_url']);
         $data['guru_id'] = Auth::id();
 
         if ($request->tipe == 'pdf' && $request->hasFile('file_pdf')) {
-            $path = $request->file('file_pdf')->store('public/materi_pdf');
-            $data['file_path'] = $path;
+            // PERBAIKAN: Simpan ke disk 'public' di dalam folder 'materi_pdf'
+            $path = $request->file('file_pdf')->store('materi_pdf', 'public');
+            $data['file_path'] = $path; // Path yang disimpan sekarang: "materi_pdf/random_filename.pdf"
+            $data['youtube_url'] = null;
         }
 
         Materi::create($data);
@@ -57,27 +49,16 @@ class MateriController extends Controller
         return redirect()->route('guru.materi.index')->with('success', 'Materi berhasil ditambahkan.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Materi $materi)
     {
-        // Pastikan guru hanya bisa mengedit materinya sendiri
-        if ($materi->guru_id !== Auth::id()) {
-            abort(403);
-        }
+        if ($materi->guru_id !== Auth::id()) abort(403);
         $kelas = Kelas::with('jurusan')->get();
         return view('guru.materi.edit', compact('materi', 'kelas'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Materi $materi)
     {
-        if ($materi->guru_id !== Auth::id()) {
-            abort(403);
-        }
+        if ($materi->guru_id !== Auth::id()) abort(403);
 
         $request->validate([
             'judul' => 'required|string|max:255',
@@ -93,37 +74,30 @@ class MateriController extends Controller
         if ($request->tipe == 'pdf' && $request->hasFile('file_pdf')) {
             // Hapus file lama jika ada
             if ($materi->file_path) {
-                Storage::delete($materi->file_path);
+                Storage::disk('public')->delete($materi->file_path);
             }
-            $path = $request->file('file_pdf')->store('public/materi_pdf');
+            // PERBAIKAN: Simpan ke disk 'public'
+            $path = $request->file('file_pdf')->store('materi_pdf', 'public');
             $data['file_path'] = $path;
-            $data['youtube_url'] = null; // Kosongkan youtube url jika tipe pdf
+            $data['youtube_url'] = null;
         } elseif ($request->tipe == 'video') {
-             // Hapus file lama jika ada
-            if ($materi->file_path) {
-                Storage::delete($materi->file_path);
+             if ($materi->file_path) {
+                Storage::disk('public')->delete($materi->file_path);
             }
-            $data['file_path'] = null; // Kosongkan file path jika tipe video
+            $data['file_path'] = null;
         }
-
-
+        
         $materi->update($data);
 
         return redirect()->route('guru.materi.index')->with('success', 'Materi berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Materi $materi)
     {
-        if ($materi->guru_id !== Auth::id()) {
-            abort(403);
-        }
+        if ($materi->guru_id !== Auth::id()) abort(403);
 
-        // Hapus file dari storage jika ada
         if ($materi->file_path) {
-            Storage::delete($materi->file_path);
+            Storage::disk('public')->delete($materi->file_path);
         }
 
         $materi->delete();

@@ -34,9 +34,16 @@
                                     <tr>
                                         <td class="px-6 py-4">{{ $quiz->judul }}</td>
                                         <td class="px-6 py-4">{{ $quiz->kelas->tingkat }} {{ $quiz->kelas->jurusan->singkatan }} {{ $quiz->kelas->nama_kelas }}</td>
-                                        <td class="px-6 py-4">{{ $quiz->questions->count() }}</td>
-                                        <td class="px-6 py-4">
-                                            <a href="{{ route('guru.quiz.show', $quiz) }}" class="text-indigo-600 hover:text-indigo-900">Lihat & Tambah Soal</a>
+                                        <td class="px-6 py-4">{{ $quiz->questions_count }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <a href="{{ route('guru.quiz.show', $quiz) }}" class="text-green-600 hover:text-green-900">Lihat/Tambah Soal</a>
+                                            {{-- TOMBOL BARU --}}
+                                            <a href="{{ route('guru.quiz.edit', $quiz) }}" class="text-indigo-600 hover:text-indigo-900 ml-4">Edit</a>
+                                            <form action="{{ route('guru.quiz.destroy', $quiz) }}" method="POST" class="inline-block ml-4" onsubmit="return confirm('Apakah Anda yakin ingin menghapus quiz ini? Semua pertanyaan di dalamnya juga akan terhapus.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty

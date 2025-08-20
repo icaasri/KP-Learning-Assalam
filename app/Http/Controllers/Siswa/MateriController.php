@@ -6,51 +6,49 @@ use App\Http\Controllers\Controller;
 use App\Models\Materi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class MateriController extends Controller
 {
-    /**
-     * Menampilkan daftar materi untuk kelas siswa yang sedang login.
-     */
     public function index()
     {
         $user = Auth::user();
-        
-        // Pastikan siswa memiliki kelas
         if (!$user->kelas_id) {
-            // Tampilkan pesan jika siswa belum dimasukkan ke kelas manapun
             return view('siswa.materi.index')->with('materis', collect());
         }
-
-        $materis = Materi::where('kelas_id', $user->kelas_id)
-                         ->with('guru') // Ambil data guru untuk ditampilkan
-                         ->orderBy('created_at', 'desc')
-                         ->paginate(10);
-
+        $materis = Materi::where('kelas_id', $user->kelas_id)->with('guru')->orderBy('created_at', 'desc')->paginate(10);
         return view('siswa.materi.index', compact('materis'));
     }
 
-    /**
-     * Menampilkan detail satu materi.
-     */
     public function show(Materi $materi)
     {
-        // Keamanan: Pastikan siswa hanya bisa melihat materi untuk kelasnya
         if (Auth::user()->kelas_id !== $materi->kelas_id) {
             abort(403, 'ANDA TIDAK MEMILIKI AKSES KE MATERI INI');
         }
-
-        // Jika tipe video, ubah URL YouTube menjadi URL embed
         if ($materi->tipe === 'video' && $materi->youtube_url) {
             $materi->youtube_url = $this->getEmbedUrl($materi->youtube_url);
         }
-
         return view('siswa.materi.show', compact('materi'));
     }
 
-    /**
-     * Helper function untuk mengubah URL YouTube biasa menjadi URL embed.
-     */
+    public function viewPdf(Materi $materi)
+    {
+        if (Auth::user()->kelas_id !== $materi->kelas_id) {
+            abort(403);
+        }
+
+        // PERBAIKAN: Gunakan Storage facade untuk mendapatkan path absolut
+        $path = Storage::disk('public')->path($materi->file_path);
+
+        // Keamanan: Pastikan file ada
+        if (!Storage::disk('public')->exists($materi->file_path)) {
+            abort(404, 'File not found');
+        }
+
+        // Ambil file dari storage dan tampilkan di browser
+        return response()->file($path);
+    }
+
     private function getEmbedUrl($url)
     {
         preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match);

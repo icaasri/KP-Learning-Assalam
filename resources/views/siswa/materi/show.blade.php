@@ -21,8 +21,9 @@
                     @if ($materi->tipe == 'pdf' && $materi->file_path)
                         <div>
                             <h4 class="font-bold mb-2">Materi PDF:</h4>
-                            <iframe src="{{ Storage::url($materi->file_path) }}" width="100%" height="600px"></iframe>
-                            <a href="{{ Storage::url($materi->file_path) }}" target="_blank" class="mt-4 inline-block bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+                            {{-- PERBAIKAN: Gunakan route baru untuk menampilkan PDF --}}
+                            <iframe src="{{ route('siswa.materi.viewPdf', $materi) }}" width="100%" height="600px"></iframe>
+                            <a href="{{ route('siswa.materi.viewPdf', $materi) }}" target="_blank" class="mt-4 inline-block bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
                                 Download PDF
                             </a>
                         </div>

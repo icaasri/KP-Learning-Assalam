@@ -12,7 +12,7 @@ class QuizController extends Controller
 {
     public function index()
     {
-        $quizzes = Quiz::where('guru_id', Auth::id())->with('kelas.jurusan')->latest()->paginate(10);
+        $quizzes = Quiz::where('guru_id', Auth::id())->with('kelas.jurusan')->withCount('questions')->latest()->paginate(10);
         return view('guru.quiz.index', compact('quizzes'));
     }
 
@@ -42,12 +42,52 @@ class QuizController extends Controller
 
     public function show(Quiz $quiz)
     {
-        // Pastikan guru hanya bisa melihat quiz miliknya
         if ($quiz->guru_id !== Auth::id()) abort(403);
         
-        $quiz->load('questions.answers'); // Eager load relasi
+        $quiz->load('questions.answers');
         return view('guru.quiz.show', compact('quiz'));
     }
 
-    // Method edit, update, destroy bisa ditambahkan sesuai kebutuhan
+    // --- TAMBAHKAN METHOD DI BAWAH INI ---
+
+    /**
+     * Menampilkan form untuk mengedit quiz.
+     */
+    public function edit(Quiz $quiz)
+    {
+        if ($quiz->guru_id !== Auth::id()) abort(403);
+
+        $kelas = Kelas::with('jurusan')->get();
+        return view('guru.quiz.edit', compact('quiz', 'kelas'));
+    }
+
+    /**
+     * Memperbarui data quiz di database.
+     */
+    public function update(Request $request, Quiz $quiz)
+    {
+        if ($quiz->guru_id !== Auth::id()) abort(403);
+
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'kelas_id' => 'required|exists:kelas,id',
+        ]);
+
+        $quiz->update($request->all());
+
+        return redirect()->route('guru.quiz.index')->with('success', 'Quiz berhasil diperbarui.');
+    }
+
+    /**
+     * Menghapus quiz dari database.
+     */
+    public function destroy(Quiz $quiz)
+    {
+        if ($quiz->guru_id !== Auth::id()) abort(403);
+
+        $quiz->delete();
+
+        return redirect()->route('guru.quiz.index')->with('success', 'Quiz berhasil dihapus.');
+    }
 }

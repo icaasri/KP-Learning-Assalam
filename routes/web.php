@@ -20,7 +20,6 @@ use App\Http\Controllers\Siswa\JadwalController as SiswaJadwalController;
 */
 
 // Route Utama (Halaman Awal)
-// --- PERBAIKAN: Arahkan langsung ke halaman login ---
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -53,13 +52,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
     Route::resource('materi', MateriController::class);
     Route::resource('quiz', QuizController::class);
+    
+    // --- PERBAIKAN NAMA ROUTE DI SINI ---
     Route::post('quiz/{quiz}/questions', [QuestionController::class, 'store'])->name('quiz.questions.store');
+    Route::get('quiz/{quiz}/questions/{question}/edit', [QuestionController::class, 'edit'])->name('quiz.questions.edit');
+    Route::put('quiz/{quiz}/questions/{question}', [QuestionController::class, 'update'])->name('quiz.questions.update');
+    Route::delete('quiz/{quiz}/questions/{question}', [QuestionController::class, 'destroy'])->name('quiz.questions.destroy');
 });
 
 // Grup Route Siswa
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
     Route::get('materi', [SiswaMateriController::class, 'index'])->name('materi.index');
     Route::get('materi/{materi}', [SiswaMateriController::class, 'show'])->name('materi.show');
+    Route::get('materi/{materi}/view-pdf', [SiswaMateriController::class, 'viewPdf'])->name('materi.viewPdf');
     Route::get('quiz', [SiswaQuizController::class, 'index'])->name('quiz.index');
     Route::get('quiz/{quiz}', [SiswaQuizController::class, 'show'])->name('quiz.show');
     Route::post('quiz/{quiz}', [SiswaQuizController::class, 'store'])->name('quiz.store');

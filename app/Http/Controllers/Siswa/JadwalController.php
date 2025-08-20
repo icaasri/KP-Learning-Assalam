@@ -28,10 +28,10 @@ class JadwalController extends Controller
                          ->groupBy('hari'); // Mengelompokkan jadwal berdasarkan hari
 
         // Urutkan hari agar sesuai (Senin, Selasa, ...)
-        $orderedDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        $orderedDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
         $sortedJadwals = collect($orderedDays)->mapWithKeys(function ($day) use ($jadwals) {
             return [$day => $jadwals->get($day)];
-        });
+        })->filter(); // Filter untuk menghilangkan hari yang kosong
 
         return view('siswa.jadwal.index', ['jadwals' => $sortedJadwals]);
     }

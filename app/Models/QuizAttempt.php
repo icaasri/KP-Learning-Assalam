@@ -7,18 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Question extends Model
+class QuizAttempt extends Model
 {
     use HasFactory;
 
-    /**
-     * Mengizinkan semua kolom untuk diisi secara massal.
-     * Ini akan memperbaiki error 'MassAssignmentException'.
-     */
     protected $guarded = [];
 
     /**
-     * Mendefinisikan relasi "satu pertanyaan milik satu quiz".
+     * Relasi ke User (Siswa)
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relasi ke Quiz
      */
     public function quiz(): BelongsTo
     {
@@ -26,10 +30,10 @@ class Question extends Model
     }
 
     /**
-     * Mendefinisikan relasi "satu pertanyaan memiliki banyak pilihan jawaban".
+     * Relasi ke jawaban-jawaban siswa
      */
-    public function answers(): HasMany
+    public function siswaAnswers(): HasMany
     {
-        return $this->hasMany(Answer::class);
+        return $this->hasMany(SiswaAnswer::class);
     }
 }
